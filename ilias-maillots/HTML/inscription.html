@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inscription — ILIAS & LAHCEN</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../CSS/inscription.css">
+    <link rel="icon" href="../images/inscription.png" type="image/png">
+</head>
+<body>
+ 
+<nav>
+    <div class="nav-inner">
+        <a href="index.html" class="brand">ILIAS&<span>LAHCEN</span></a>
+        <div class="nav-links" id="nav-links">
+            <a href="index.html">Accueil</a>
+            <a href="a-propos.html">À Propos</a>
+            <a href="contact.html">Contact</a>
+        </div>
+        <div class="nav-actions">
+            <a href="login.html" class="btn-nav-login">Déjà membre ? Connexion</a>
+            <button class="nav-hamburger" id="hamburger"><span></span><span></span><span></span></button>
+        </div>
+    </div>
+</nav>
+ 
+<main>
+    <div class="signup-wrap">
+        <div class="signup-brand">
+            <div class="signup-brand-name">ILIAS&<span>LAHCEN</span></div>
+            <div class="signup-brand-sub">Maillots Premium · Maroc</div>
+        </div>
+ 
+        <div class="signup-card">
+            <div id="form-view">
+                <h2>Créer un <em>compte</em></h2>
+                <p class="signup-subtitle">Rejoignez notre communauté de passionnés de football</p>
+ 
+                <div class="field-row">
+                    <div class="field"><label>Prénom *</label><input id="r-prenom" type="text" placeholder="Lahcen"></div>
+                    <div class="field"><label>Nom *</label><input id="r-nom" type="text" placeholder="Sahraoui"></div>
+                </div>
+                <div class="field"><label>Email *</label><input id="r-email" type="email" placeholder="Lahcen@example.com"></div>
+                <div class="field"><label>Téléphone</label><input id="r-tel" type="tel" placeholder="+212 6XX XXX XXX"></div>
+                <div class="field">
+                    <label>Mot de passe *</label>
+                    <div class="pwd-wrap">
+                        <input id="r-pwd" type="password" placeholder="Minimum 6 caractères" oninput="checkPwd(this.value)">
+                        <button type="button" class="pwd-toggle" onclick="togglePwd('r-pwd', this)" tabindex="-1">
+                            <svg id="eye-r" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                        </button>
+                    </div>
+                    <div class="pwd-strength">
+                        <div class="pwd-bar"><div class="pwd-bar-fill" id="pwd-bar"></div></div>
+                        <div class="pwd-hint" id="pwd-hint">Entrez un mot de passe</div>
+                    </div>
+                </div>
+                <div class="field">
+                    <label>Confirmer le mot de passe *</label>
+                    <div class="pwd-wrap">
+                        <input id="r-pwd2" type="password" placeholder="Répétez le mot de passe">
+                        <button type="button" class="pwd-toggle" onclick="togglePwd('r-pwd2', this)" tabindex="-1">
+                            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                        </button>
+                    </div>
+                </div>
+ 
+                <div class="terms-row">
+                    <input type="checkbox" id="r-terms">
+                    <label for="r-terms">J'accepte les <a href="#">conditions d'utilisation</a> et la <a href="#">politique de confidentialité</a>.</label>
+                </div>
+ 
+                <button class="btn-signup" onclick="inscrire()">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+                    Créer mon compte
+                </button>
+ 
+                <p class="error-msg" id="err-msg">Veuillez corriger les erreurs ci-dessus.</p>
+ 
+                <div class="divider"><span></span><p>Déjà un compte ?</p><span></span></div>
+                <p class="login-link"><a href="login.html">Se connecter →</a></p>
+            </div>
+ 
+            <div class="success-view" id="success-view">
+                <div class="success-icon">
+                    <svg width="36" height="36" fill="none" stroke="#fff" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>
+                </div>
+                <h3>Bienvenue !</h3>
+                <p>Votre compte a été créé avec succès. Vous pouvez maintenant explorer notre collection de maillots premium.</p>
+                <a href="client.html" class="btn-go-shop">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+                    Découvrir la boutique
+                </a>
+            </div>
+        </div>
+    </div>
+</main>
+ 
+<script>
+    const hamburger = document.getElementById('hamburger');
+    const navLinks = document.getElementById('nav-links');
+    hamburger.addEventListener('click', () => navLinks.classList.toggle('open'));
+    document.addEventListener('click', e => { if (!e.target.closest('nav')) navLinks.classList.remove('open'); });
+ 
+    function togglePwd(id, btn) {
+        var input = document.getElementById(id);
+        var isText = input.type === 'text';
+        input.type = isText ? 'password' : 'text';
+        btn.querySelector('svg').style.opacity = isText ? '1' : '0.5';
+    }
+ 
+    function checkPwd(val) {
+        var bar = document.getElementById('pwd-bar');
+        var hint = document.getElementById('pwd-hint');
+        var strength = 0;
+        if (val.length >= 6) strength++;
+        if (val.length >= 10) strength++;
+        if (/[A-Z]/.test(val)) strength++;
+        if (/[0-9]/.test(val)) strength++;
+        if (/[^a-zA-Z0-9]/.test(val)) strength++;
+ 
+        var widths = ['0%', '20%', '45%', '65%', '85%', '100%'];
+        var colors = ['#e0d8cc', '#e53e3e', '#e07a38', '#e0b838', '#4a6650', '#2d7a50'];
+        var labels = ['Entrez un mot de passe', 'Très faible', 'Faible', 'Moyen', 'Fort', 'Très fort'];
+ 
+        bar.style.width = widths[strength];
+        bar.style.background = colors[strength];
+        hint.textContent = labels[strength];
+        hint.style.color = colors[strength] === '#e0d8cc' ? 'var(--ink3)' : colors[strength];
+    }
+ 
+    function showErr(msg) {
+        var el = document.getElementById('err-msg');
+        el.textContent = msg;
+        el.style.display = 'block';
+        setTimeout(() => el.style.display = 'none', 4000);
+    }
+ 
+    function inscrire() {
+        var prenom = document.getElementById('r-prenom').value.trim();
+        var nom = document.getElementById('r-nom').value.trim();
+        var email = document.getElementById('r-email').value.trim();
+        var pwd = document.getElementById('r-pwd').value;
+        var pwd2 = document.getElementById('r-pwd2').value;
+        var terms = document.getElementById('r-terms').checked;
+ 
+        if (!prenom || !nom) { showErr('Veuillez entrer votre prénom et nom.'); return; }
+        if (!email || !email.includes('@')) { showErr('Veuillez entrer un email valide.'); return; }
+        if (pwd.length < 6) { showErr('Le mot de passe doit contenir au moins 6 caractères.'); return; }
+        if (pwd !== pwd2) { showErr('Les mots de passe ne correspondent pas.'); return; }
+        if (!terms) { showErr('Vous devez accepter les conditions d\'utilisation.'); return; }
+ 
+        // Save basic user info (in real app this would be a backend call)
+        var user = { prenom: prenom, nom: nom, email: email };
+        localStorage.setItem('boutique_user', JSON.stringify(user));
+ 
+        document.getElementById('form-view').style.display = 'none';
+        document.getElementById('success-view').style.display = 'block';
+    }
+ 
+    document.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') inscrire();
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finaliser la Commande</title>
+    <link rel="stylesheet" href="../CSS/checkout.css">
+ 
+        
+</head>
+ 
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>✓ Finaliser votre Commande</h1>
+            <p>Complétez vos informations pour confirmer l'achat</p>
+        </div>
+ 
+        <div id="checkout-content">
+            <div class="checkout-wrapper">
+                <!-- Formulaire Client -->
+                <div class="section">
+                    <h2>Informations Personnelles</h2>
+                    <form id="checkout-form">
+                        <div class="form-group">
+                            <label>Nom Complet *</label>
+                            <input type="text" id="fullname" required placeholder="iliasbenazzouza">
+                        </div>
+                        <div class="form-group">
+                            <label>Email *</label>
+                            <input type="email" id="email" required placeholder="ilias@example.com">
+                        </div>
+                        <div class="form-group">
+                            <label>Téléphone *</label>
+                            <input type="tel" id="phone" required placeholder="+212 6XX XXX XXX">
+                        </div>
+                        <div class="form-group">
+                            <label>Adresse *</label>
+                            <input type="text" id="address" required placeholder="123 Rue Mohammed V">
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Ville *</label>
+                                <input type="text" id="city" required placeholder="Casablanca">
+                            </div>
+                            <div class="form-group">
+                                <label>Code Postal *</label>
+                                <input type="text" id="postal" required placeholder="xxxxx">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+ 
+                <!-- Résumé Panier -->
+                <div class="section">
+                    <h2>Résumé de la Commande</h2>
+                    <div id="panier-list"></div>
+                    <div class="summary">
+                        <div class="summary-row">
+                            <span class="summary-label">Sous-total</span>
+                            <span class="summary-value" id="subtotal">0 Dhs</span>
+                        </div>
+                        <div class="summary-row">
+                            <span class="summary-label">Livraison</span>
+                            <span class="summary-value" id="shipping">50 Dhs</span>
+                        </div>
+                        <div class="summary-row">
+                            <span class="summary-label">Taxes (10%)</span>
+                            <span class="summary-value" id="tax">0 Dhs</span>
+                        </div>
+                        <div class="summary-row total">
+                            <span>Total</span>
+                            <span id="total">0 Dhs</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+ 
+            <div class="actions">
+                <button class="btn btn-secondary" onclick="retournerAuPanier()">← Retour au Panier</button>
+                <button class="btn btn-primary" onclick="confirmerCommande()">Confirmer la Commande</button>
+            </div>
+        </div>
+ 
+        <div id="empty-state" style="display: none;">
+            <div class="empty-cart-themed">
+                <div class="ect-icon">
+                    <svg width="36" height="36" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                        <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+                        <line x1="3" y1="6" x2="21" y2="6"/>
+                        <path d="M16 10a4 4 0 0 1-8 0"/>
+                    </svg>
+                </div>
+                <h2 class="ect-title">Panier vide</h2>
+                <p class="ect-sub">Votre panier ne contient aucun article.<br>Découvrez notre collection de maillots premium.</p>
+                <a href="client.html" class="ect-btn">
+                    <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                        <path d="M19 12H5M12 19l-7-7 7-7"/>
+                    </svg>
+                    Retour à la boutique
+                </a>
+            </div>
+        </div>
+    </div>
+ 
+    <script>
+        const PANIER_KEY = "boutique_panier";
+        const COMMANDE_KEY = "boutique_commandes";
+ 
+        let panier = [];
+ 
+        // ✅ Charger le panier
+        function chargerPanier() {
+            panier = JSON.parse(localStorage.getItem(PANIER_KEY) || '[]');
+            
+            if (panier.length === 0) {
+                document.getElementById('checkout-content').style.display = 'none';
+                document.getElementById('empty-state').style.display = 'block';
+                return;
+            }
+ 
+            afficherPanier();
+            calculerTotal();
+        }
+ 
+        // ✅ Afficher les articles du panier
+        function afficherPanier() {
+            const list = document.getElementById('panier-list');
+            list.innerHTML = panier.map((item, idx) => `
+                <div class="panier-item">
+                    <div class="item-info">
+                        <div class="item-name">${item.nom}</div>
+                        <div class="item-qty">Prix unitaire: ${item.prixFinal} Dhs</div>
+                    </div>
+                    <div class="qty-control">
+                        <button type="button" class="qty-btn" onclick="modifierQte(${idx}, -1)">−</button>
+                        <input type="number" class="qty-input" value="${item.quantite}" min="1" onchange="modifierQteDirecte(${idx}, this.value)">
+                        <button type="button" class="qty-btn" onclick="modifierQte(${idx}, 1)">+</button>
+                    </div>
+                    <div class="item-price">${(item.prixFinal * item.quantite).toFixed(2)} Dhs</div>
+                    <button type="button" class="remove-btn" onclick="supprimerArticle(${idx})">Supprimer</button>
+                </div>
+            `).join('');
+        }
+ 
+        // ✅ Modifier la quantité
+        function modifierQte(idx, delta) {
+            panier[idx].quantite = Math.max(1, panier[idx].quantite + delta);
+            localStorage.setItem(PANIER_KEY, JSON.stringify(panier));
+            afficherPanier();
+            calculerTotal();
+        }
+ 
+        // ✅ Modifier la quantité directement
+        function modifierQteDirecte(idx, value) {
+            const qty = Math.max(1, parseInt(value) || 1);
+            panier[idx].quantite = qty;
+            localStorage.setItem(PANIER_KEY, JSON.stringify(panier));
+            afficherPanier();
+            calculerTotal();
+        }
+ 
+        // ✅ Supprimer un article
+        function supprimerArticle(idx) {
+            panier.splice(idx, 1);
+            localStorage.setItem(PANIER_KEY, JSON.stringify(panier));
+            
+            if (panier.length === 0) {
+                document.getElementById('checkout-content').style.display = 'none';
+                document.getElementById('empty-state').style.display = 'block';
+            } else {
+                afficherPanier();
+                calculerTotal();
+            }
+        }
+ 
+        // ✅ Calculer le total
+        function calculerTotal() {
+            const subtotal = panier.reduce((sum, item) => sum + (item.prixFinal * item.quantite), 0);
+            const shipping = 50;
+            const tax = (subtotal * 0.1);
+            const total = subtotal + shipping + tax;
+ 
+            document.getElementById('subtotal').textContent = subtotal.toFixed(2) + ' Dhs';
+            document.getElementById('tax').textContent = tax.toFixed(2) + ' Dhs';
+            document.getElementById('total').textContent = total.toFixed(2) + ' Dhs';
+        }
+ 
+        // ✅ Retourner au panier
+        function retournerAuPanier() {
+            window.location.href = 'client.html';
+        }
+ 
+        // ✅ Confirmer la commande
+        function confirmerCommande() {
+            const form = document.getElementById('checkout-form');
+            
+            if (!form.checkValidity()) {
+                alert('Veuillez remplir tous les champs obligatoires');
+                return;
+            }
+ 
+            const commande = {
+                id: 'CMD-' + Date.now(),
+                date: new Date().toLocaleString('fr-FR'),
+                client: {
+                    nom: document.getElementById('fullname').value,
+                    email: document.getElementById('email').value,
+                    phone: document.getElementById('phone').value,
+                    address: document.getElementById('address').value,
+                    city: document.getElementById('city').value,
+                    postal: document.getElementById('postal').value
+                },
+                articles: panier,
+                subtotal: parseFloat(document.getElementById('subtotal').textContent),
+                shipping: 50,
+                tax: parseFloat(document.getElementById('tax').textContent),
+                total: parseFloat(document.getElementById('total').textContent),
+                statut: 'En attente'
+            };
+ 
+            // Sauvegarder la commande
+            let commandes = JSON.parse(localStorage.getItem(COMMANDE_KEY) || '[]');
+            commandes.push(commande);
+            localStorage.setItem(COMMANDE_KEY, JSON.stringify(commandes));
+ 
+            // Vider le panier
+            localStorage.removeItem(PANIER_KEY);
+ 
+            // Afficher le message de succès
+            showSuccessMessage(commande.id);
+        }
+ 
+        // ✅ Message de succès
+        function showSuccessMessage(commandeId) {
+            const content = document.getElementById('checkout-content');
+            content.innerHTML = `
+                <div style="text-align: center; padding: 60px 20px; color: white;">
+                    <div style="font-size: 80px; margin-bottom: 20px; animation: scaleIn 0.6s ease;">✓</div>
+                    <h2 style="font-size: 2rem; margin-bottom: 10px;">Commande Confirmée!</h2>
+                    <p style="font-size: 1.1rem; opacity: 0.8; margin-bottom: 30px;">
+                        Merci pour votre achat. Votre numéro de commande est:<br>
+                        <strong style="font-size: 1.3rem; color: #fbbf24;">${commandeId}</strong>
+                    </p>
+                    <p style="opacity: 0.7; margin-bottom: 30px;">Un email de confirmation a été envoyé à votre adresse.</p>
+                    <a href="client.html" class="btn btn-primary" style="display: inline-block; width: auto; padding: 12px 30px;">Continuer les Achats</a>
+                </div>
+            `;
+ 
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes scaleIn {
+                    from {
+                        opacity: 0;
+                        transform: scale(0);
+                    }
+                    to {
+                        opacity: 1;
+                        transform: scale(1);
+                    }
+                }
+            `;
+            document.head.appendChild(style);
+        }
+ 
+        // Démarrage
+        chargerPanier();
+    </script>
+</body>
+</html>

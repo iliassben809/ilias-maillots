@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion des produits — ILIAS & LAHCEN</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../CSS/admin.css">
+    <link rel="icon" href="../images/iconadmin.png" type="image/png">
+    <style>
+        /*
+         * Inline styles only for elements that depend on JS-driven state.
+         * All other styles should live in admin.css as before.
+         */
+        #empty { display: none; }
+    </style>
+</head>
+<body>
+
+    <!-- ══ HEADER ══ -->
+    <header class="admin-header">
+        <div class="header-inner">
+            <div class="header-left">
+                <a href="client.html" class="btn-back" title="Retour à la boutique">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                        <path d="M19 12H5M12 19l-7-7 7-7"/>
+                    </svg>
+                </a>
+                <div class="brand">ILIAS&<span class="brand-accent">LAHCEN</span></div>
+                <span class="admin-badge">Admin</span>
+            </div>
+            <div class="header-right">
+                <a href="login.html" class="btn-logout">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                        <polyline points="16 17 21 12 16 7"/>
+                        <line x1="21" y1="12" x2="9" y2="12"/>
+                    </svg>
+                    Déconnexion
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <div class="page">
+
+        <!-- ══ STATS ══
+             Values are written by stats() in index.js each time products change. -->
+        <div class="stats">
+            <div class="stat">
+                <div class="stat-label">Total produits</div>
+                <div class="stat-val" id="stat-total">0</div>
+            </div>
+            <div class="stat">
+                <div class="stat-label">Prix moyen</div>
+                <div class="stat-val" id="stat-avg">0 Dhs</div>
+            </div>
+            <div class="stat">
+                <div class="stat-label">Réduction max</div>
+                <div class="stat-val" id="stat-max">0%</div>
+            </div>
+        </div>
+
+        <!-- ══ ADD FORM ══
+             ajouterProduit() reads these inputs, calls db_ajouter(), then re-renders. -->
+        <div class="section-title">Ajouter un produit</div>
+        <div class="form-card">
+            <div class="form-grid">
+                <div class="field">
+                    <label>Nom du produit *</label>
+                    <input id="f-name" type="text" placeholder="Ex: FC Barcelona">
+                </div>
+                <div class="field">
+                    <label>Description</label>
+                    <input id="f-desc" type="text" placeholder="Ex: club sportif">
+                </div>
+                <div class="field">
+                    <label>URL de l'image</label>
+                    <input id="f-img" type="url" placeholder="https://...">
+                </div>
+                <div class="field">
+                    <label>Prix (Dhs) *</label>
+                    <input id="f-price" type="number" placeholder="0" min="0">
+                </div>
+                <div class="field">
+                    <label>Réduction (%)</label>
+                    <input id="f-reduc" type="number" placeholder="0" min="0" max="99">
+                </div>
+            </div>
+            <button class="btn-add" onclick="ajouterProduit()">
+                <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                    <line x1="12" y1="5" x2="12" y2="19"/>
+                    <line x1="5" y1="12" x2="19" y2="12"/>
+                </svg>
+                Ajouter le produit
+            </button>
+        </div>
+
+        <!-- ══ PRODUCT LIST ══
+             Populated by render() in index.js. filtrer() applies the search query. -->
+        <div class="list-header">
+            <div class="section-title" style="margin-bottom:0">Liste des produits</div>
+            <div class="search-wrap">
+                <svg class="search-icon" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <circle cx="11" cy="11" r="8"/>
+                    <path d="m21 21-4.35-4.35"/>
+                </svg>
+                <input id="search" oninput="filtrer()" placeholder="Rechercher...">
+            </div>
+        </div>
+
+        <!-- Cards are injected here by render() -->
+        <div class="grid" id="grid"></div>
+        <div class="empty" id="empty">Aucun produit trouvé.</div>
+
+    </div><!-- /.page -->
+
+
+    <!-- ══ EDIT MODAL ══
+         ouvrir(id) populates these inputs; sauvegarder() calls db_modifier() and saves. -->
+    <div class="modal-overlay" id="modal" onclick="fermerModalSiDehors(event)">
+        <div class="modal">
+            <div class="modal-head">
+                <h3>Modifier le produit</h3>
+                <button class="modal-close" onclick="fermerModal()">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="field"><label>Nom</label><input id="m-name" type="text"></div>
+                <div class="field"><label>Description</label><input id="m-desc" type="text"></div>
+                <div class="field"><label>URL image</label><input id="m-img" type="url"></div>
+                <div class="modal-grid">
+                    <div class="field"><label>Prix (Dhs)</label><input id="m-price" type="number" min="0"></div>
+                    <div class="field"><label>Réduction (%)</label><input id="m-reduc" type="number" min="0" max="99"></div>
+                </div>
+            </div>
+            <div class="modal-foot">
+                <button class="btn-save" onclick="sauvegarder()">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    Sauvegarder
+                </button>
+                <button class="btn-cancel" onclick="fermerModal()">Annuler</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══ TOAST ══ -->
+    <div class="toast" id="toast"></div>
+
+
+    <script src="index.js"></script>
+</body>
+</html>
